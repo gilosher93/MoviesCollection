@@ -7,14 +7,14 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class MovieDetails(
     @SerializedName("adult") val adult: Boolean,
-    @SerializedName("backdrop_path") val backdropPath: String,
+    @SerializedName("backdrop_path") val backdropPath: String?,
     @SerializedName("genre_ids") val genreIds: List<Int>,
     @SerializedName("id") val id: Int,
     @SerializedName("original_language") val originalLanguage: String,
     @SerializedName("original_title") val originalTitle: String,
     @SerializedName("overview") val overview: String,
     @SerializedName("popularity") val popularity: Double,
-    @SerializedName("poster_path") val posterPath: String,
+    @SerializedName("poster_path") val posterPath: String?,
     @SerializedName("release_date") val releaseDate: String,
     @SerializedName("title") val title: String,
     @SerializedName("video") val video: Boolean,
@@ -30,6 +30,12 @@ data class MovieDetails(
     @SerializedName("revenue") val revenue: Int,
     @SerializedName("runtime") val runtime: Int,
     @SerializedName("spoken_languages") val spokenLanguages: List<SpokenLanguage>,
-    @SerializedName("status") val status: String,
+    @SerializedName("status") val status: String?,
     @SerializedName("tagline") val tagline: String,
-) : Parcelable
+    var castList: List<Cast>? = null,
+    var videoPreviewList: List<VideoPreview>? = null
+) : Parcelable {
+
+
+    fun hasFullData() = budget > 0 && runtime > 0 && status != null
+}

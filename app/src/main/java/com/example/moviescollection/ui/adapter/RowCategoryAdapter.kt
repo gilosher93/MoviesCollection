@@ -65,9 +65,9 @@ class RowCategoryAdapter(
             }
         }
 
-        private fun setImage(imagePath: String) {
+        private fun setImage(imagePath: String?) {
             val imagePrefix = appConfig.baseUrl + appConfig.posterSize
-            if (imagePrefix.isNotEmpty() && imagePath.isNotEmpty()) {
+            if (imagePrefix.isNotEmpty() && imagePath.isNullOrBlank().not()) {
                 val imageUrl = imagePrefix + imagePath
                 Glide.with(itemView.context)
                     .applyDefaultRequestOptions(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL))

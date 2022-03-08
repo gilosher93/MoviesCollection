@@ -51,6 +51,9 @@ class CategoryFragment : Fragment() {
         binding.moviesList.layoutManager = GridLayoutManager(requireContext(), NUM_OF_COLUMNS)
 
         binding.toolbar.text = categoryType.title
+        binding.backButton.setOnClickListener {
+            activity?.onBackPressed()
+        }
         observeMoviesCategory()
     }
 

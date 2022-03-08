@@ -1,8 +1,10 @@
 package com.example.moviescollection.network.api
 
+import com.example.moviescollection.network.responses.CreditResponse
 import com.example.moviescollection.model.MovieDetails
 import com.example.moviescollection.network.responses.ConfigResponse
 import com.example.moviescollection.network.responses.MoviesResponse
+import com.example.moviescollection.network.responses.VideoResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -49,4 +51,16 @@ interface MoviesApi {
         @Path("movie_id") movieId: String,
         @Query("api_key") apikey: String = HttpRoutes.API_KEY
     ): Response<MovieDetails?>
+
+    @GET(HttpRoutes.GET_MOVIE_CREDITS)
+    suspend fun getMovieCredits(
+        @Path("movie_id") movieId: String,
+        @Query("api_key") apikey: String = HttpRoutes.API_KEY
+    ): Response<CreditResponse?>
+
+    @GET(HttpRoutes.GET_MOVIE_VIDEOS)
+    suspend fun getMovieVideoPreviews(
+        @Path("movie_id") movieId: String,
+        @Query("api_key") apikey: String = HttpRoutes.API_KEY
+    ): Response<VideoResponse?>
 }

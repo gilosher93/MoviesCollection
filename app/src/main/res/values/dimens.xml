@@ -2,6 +2,8 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="movie_image_width">120dp</dimen>
     <dimen name="movie_image_height">200dp</dimen>
+    <dimen name="video_preview_width">250dp</dimen>
+    <dimen name="video_preview_height">200dp</dimen>
     <dimen name="movie_backdrop_height">300dp</dimen>
     <dimen name="jumbo_movie_image_width">350dp</dimen>
 </resources>

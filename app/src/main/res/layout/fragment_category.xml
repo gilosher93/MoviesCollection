@@ -15,7 +15,7 @@
             android:layout_gravity="center_vertical"
             android:background="@color/burnt_sienna"
             android:gravity="center_vertical"
-            android:paddingStart="80dp"
+            android:paddingStart="60dp"
             android:paddingEnd="20dp"
             android:textColor="@color/white"
             android:textSize="20sp"

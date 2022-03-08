@@ -13,4 +13,8 @@ object HttpRoutes {
     const val TOP_RATED_MOVIES = "$API_VERSION/movie/top_rated"
     const val UPCOMING_MOVIES = "$API_VERSION/movie/upcoming"
     const val GET_MOVIE = "$API_VERSION/movie/{movie_id}"
+    const val GET_MOVIE_CREDITS = "$API_VERSION/movie/{movie_id}/credits"
+    const val GET_MOVIE_VIDEOS = "$API_VERSION/movie/{movie_id}/videos"
+
+    fun getYoutubeUrl(key: String) = "https://img.youtube.com/vi/$key/0.jpg"
 }
