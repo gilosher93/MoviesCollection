@@ -11,4 +11,5 @@
     <string name="videos">Videos</string>
     <string name="overview">Overview</string>
     <string name="casts">Casts</string>
+    <string name="home_title">TMDB</string>
 </resources>

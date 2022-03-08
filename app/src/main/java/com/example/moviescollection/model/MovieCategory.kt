@@ -1,7 +1,8 @@
 package com.example.moviescollection.model
 
 data class MovieCategory(
-    val title: String,
-    val movies: List<MovieDetails>,
-    val bigImages: Boolean = false
+    val categoryType: CategoryType,
+    val movies: List<Int>,
+    val bigImages: Boolean = false,
+    var currentIndex: Int = 1
 )

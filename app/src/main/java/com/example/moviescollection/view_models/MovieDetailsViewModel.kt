@@ -30,6 +30,7 @@ class MovieDetailsViewModel : ViewModel() {
             moviesManager.getMovie(movieId)?.let {
                 movieMLD.value = MovieDetailsResult.Success(it)
             } ?: run {
+                delay(2000)
                 val movieResponse = moviesApi.getMovie(movieId = movieId.toString())
                 movieResponse.errorBody()?.let {
                     movieMLD.value = MovieDetailsResult.Error(Throwable(it.string().toString()))

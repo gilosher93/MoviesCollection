@@ -1,12 +1,11 @@
 package com.example.moviescollection.view_models
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.example.moviescollection.di.AppConfig
+import com.example.moviescollection.di.MoviesManager
+import com.example.moviescollection.model.CategoryType
 import com.example.moviescollection.model.MovieCategory
-import com.example.moviescollection.model.MovieDetails
 import com.example.moviescollection.network.api.MoviesApi
-import com.example.moviescollection.network.responses.MoviesResponse
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -14,15 +13,11 @@ import org.koin.java.KoinJavaComponent.inject
 
 class HomeViewModel : ViewModel() {
 
+    private val moviesManager: MoviesManager by inject(MoviesManager::class.java)
     private val moviesApi: MoviesApi by inject(MoviesApi::class.java)
     private val appConfig: AppConfig by inject(AppConfig::class.java)
 
     private val allMoviesMLD = MutableLiveData<MovieResult>(MovieResult.Loading)
-    private var allMoviesCatalog = listOf<MovieCategory>()
-        set(value) {
-            field = value
-            allMoviesMLD.value = MovieResult.Success(value)
-        }
 
     fun observeAllMovies(
         lifecycleOwner: LifecycleOwner,
@@ -35,19 +30,30 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             appConfig.config = moviesApi.getConfig()
 
-            val nowPlaying = async { moviesApi.getNowPlayingMovies() }
-            val popular = async { moviesApi.getPopularMovies() }
-            val topRated = async { moviesApi.getTopRatedMovies() }
-            val upcoming = async { moviesApi.getUpcomingMovies() }
+            // get all movies data
+            val moviesList = listOf(
+                async { moviesApi.getNowPlayingMovies() },
+                async { moviesApi.getPopularMovies() },
+                async { moviesApi.getTopRatedMovies() },
+                async { moviesApi.getUpcomingMovies() }
+            ).awaitAll()
 
-            val allMovies = listOf(
-                MovieCategory("Movies Now Playing", nowPlaying.await()?.results ?: listOf(), true),
-                MovieCategory("Popular Movies", popular.await()?.results ?: listOf()),
-                MovieCategory("Top Rated Movies", topRated.await()?.results ?: listOf()),
-                MovieCategory("Upcoming Movies", upcoming.await()?.results ?: listOf()),
+            // save all movies data
+            for (moviesResponse in moviesList.filterNotNull()) {
+                moviesResponse.results.forEach {
+                    moviesManager.updateMovie(it)
+                }
+            }
+
+            // model the data by categories
+            val allMoviesCatalog = listOf(
+                MovieCategory(CategoryType.NOW_PLAYING, moviesList[CategoryType.NOW_PLAYING.ordinal]?.results?.map { it.id } ?: listOf(), true),
+                MovieCategory(CategoryType.POPULAR, moviesList[CategoryType.POPULAR.ordinal]?.results?.map { it.id } ?: listOf()),
+                MovieCategory(CategoryType.TOP_RATED, moviesList[CategoryType.TOP_RATED.ordinal]?.results?.map { it.id } ?: listOf()),
+                MovieCategory(CategoryType.UPCOMING, moviesList[CategoryType.UPCOMING.ordinal]?.results?.map { it.id } ?: listOf()),
             )
-
-            allMoviesCatalog = allMovies
+            moviesManager.setMoviesCatalog(allMoviesCatalog)
+            allMoviesMLD.value = MovieResult.Success(allMoviesCatalog)
         }
     }
 }

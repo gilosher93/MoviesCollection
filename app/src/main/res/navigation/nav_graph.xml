@@ -17,7 +17,15 @@
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out"
             app:popEnterAnim="@android:anim/fade_in"
-            app:popExitAnim="@android:anim/fade_out"/>
+            app:popExitAnim="@android:anim/fade_out" />
+
+        <action
+            android:id="@+id/action_HomeFragment_to_categoryFragment"
+            app:destination="@id/categoryFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
     </fragment>
 
     <fragment
@@ -26,8 +34,25 @@
         tools:layout="@layout/fragment_movie_details">
 
         <argument
-            app:argType="integer"
-            android:name="movieId" />
+            android:name="movieId"
+            app:argType="integer" />
 
+    </fragment>
+    <fragment
+        android:id="@+id/categoryFragment"
+        android:name="com.example.moviescollection.ui.fragments.CategoryFragment"
+        android:label="CategoryFragment">
+
+        <argument
+            app:argType="com.example.moviescollection.model.CategoryType"
+            android:name="categoryType" />
+
+        <action
+            android:id="@+id/action_categoryFragment_to_MovieDetailsFragment"
+            app:destination="@id/MovieDetailsFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
     </fragment>
 </navigation>

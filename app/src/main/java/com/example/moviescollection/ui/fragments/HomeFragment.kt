@@ -1,19 +1,17 @@
 package com.example.moviescollection.ui.fragments
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.moviescollection.R
 import com.example.moviescollection.databinding.FragmentHomeBinding
+import com.example.moviescollection.model.CategoryType
 import com.example.moviescollection.model.MovieDetails
-import com.example.moviescollection.ui.activities.MainActivity
 import com.example.moviescollection.ui.adapter.MoviesAdapter
 import com.example.moviescollection.view_models.HomeViewModel
 import com.example.moviescollection.view_models.MovieResult
@@ -38,7 +36,10 @@ class HomeFragment : Fragment() {
 
         homeViewModel.getMoviesCatalog()
 
-        moviesAdapter = MoviesAdapter(onMovieClicked = ::onMovieClicked)
+        moviesAdapter = MoviesAdapter(
+            onMovieClicked = ::onMovieClicked,
+            onCategoryClicked = ::onCategoryClicked
+        )
         binding.moviesList.adapter = moviesAdapter
         binding.moviesList.layoutManager = LinearLayoutManager(requireContext())
 
@@ -47,7 +48,7 @@ class HomeFragment : Fragment() {
 
     private fun observeAllMovies() {
         homeViewModel.observeAllMovies(viewLifecycleOwner) { moviesResult ->
-            when(moviesResult) {
+            when (moviesResult) {
                 is MovieResult.Loading -> {
                     setLoading(true)
                 }
@@ -72,6 +73,11 @@ class HomeFragment : Fragment() {
 
     private fun onMovieClicked(movieDetails: MovieDetails) {
         val action = HomeFragmentDirections.actionFirstFragmentToSecondFragment(movieDetails.id)
+        findNavController().navigate(action)
+    }
+
+    private fun onCategoryClicked(categoryType: CategoryType) {
+        val action = HomeFragmentDirections.actionHomeFragmentToCategoryFragment(categoryType)
         findNavController().navigate(action)
     }
 
