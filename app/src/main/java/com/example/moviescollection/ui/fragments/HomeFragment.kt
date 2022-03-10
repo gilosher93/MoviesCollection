@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.moviescollection.R
 import com.example.moviescollection.databinding.FragmentHomeBinding
 import com.example.moviescollection.model.CategoryType
+import com.example.moviescollection.model.MovieCategory
 import com.example.moviescollection.model.MovieDetails
 import com.example.moviescollection.network.results.ApiResult
 import com.example.moviescollection.ui.adapter.MoviesAdapter
@@ -43,6 +44,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         moviesAdapter = MoviesAdapter(
+            lifecycleScope = lifecycleScope,
             onMovieClicked = ::onMovieClicked,
             onCategoryClicked = ::onCategoryClicked
         )
@@ -86,5 +88,4 @@ class HomeFragment : Fragment() {
         val action = HomeFragmentDirections.actionHomeFragmentToCategoryFragment(categoryType)
         findNavController().navigate(action)
     }
-
 }

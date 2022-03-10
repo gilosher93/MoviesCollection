@@ -3,7 +3,6 @@ package com.example.moviescollection.ui.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -12,13 +11,12 @@ import com.example.moviescollection.R
 import com.example.moviescollection.databinding.ItemMovieBinding
 import com.example.moviescollection.model.MovieDetails
 import com.example.moviescollection.repositories.AppRepository
-import com.example.moviescollection.ui.diff_utils.MovieDiffUtilCallback
 import org.koin.java.KoinJavaComponent.inject
 
 const val JUMBO_TYPE = 1
 
 class RowCategoryAdapter(
-    private var items: List<MovieDetails> = listOf(),
+    private var items: MutableList<MovieDetails> = mutableListOf(),
     private var onMovieClicked: (movie: MovieDetails) -> Unit,
     private var jumbo: Boolean = false
 ) : RecyclerView.Adapter<RowCategoryAdapter.MovieAssetViewHolder>() {
@@ -40,11 +38,12 @@ class RowCategoryAdapter(
     override fun getItemCount() = items.size
 
     fun setData(newItems: List<MovieDetails>) {
-        val callback = MovieDiffUtilCallback(items, newItems)
-        items = newItems
+        val oldSize = items.size
 
-        val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(callback)
-        diffResult.dispatchUpdatesTo(this)
+        items.clear()
+        items.addAll(newItems)
+
+        notifyItemRangeInserted(oldSize, items.size)
     }
 
     class MovieAssetViewHolder(

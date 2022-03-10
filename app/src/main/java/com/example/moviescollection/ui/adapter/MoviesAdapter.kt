@@ -3,6 +3,7 @@ package com.example.moviescollection.ui.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -12,11 +13,14 @@ import com.example.moviescollection.repositories.MoviesRepository
 import com.example.moviescollection.model.CategoryType
 import com.example.moviescollection.model.MovieCategory
 import com.example.moviescollection.model.MovieDetails
+import com.example.moviescollection.ui.PaginationScrollListener
 import com.example.moviescollection.ui.diff_utils.MovieCategoryDiffUtilCallback
+import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.inject
 
 class MoviesAdapter(
     private var items: List<MovieCategory> = listOf(),
+    private var lifecycleScope: LifecycleCoroutineScope,
     private var onMovieClicked: (movie: MovieDetails) -> Unit,
     private var onCategoryClicked: (type: CategoryType) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -28,7 +32,7 @@ class MoviesAdapter(
             parent,
             false
         )
-        return RowViewHolder(binding, onMovieClicked, onCategoryClicked)
+        return RowViewHolder(binding, lifecycleScope, onMovieClicked, onCategoryClicked)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -56,24 +60,57 @@ class MoviesAdapter(
 
     class RowViewHolder(
         private val binding: ItemMoviesListBinding,
+        private var lifecycleScope: LifecycleCoroutineScope,
         private val onMovieClicked: (movie: MovieDetails) -> Unit,
         private var onCategoryClicked: (type: CategoryType) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        private val moviesManager: MoviesRepository by inject(MoviesRepository::class.java)
+        private val moviesRepository: MoviesRepository by inject(MoviesRepository::class.java)
+        private var layoutManager: LinearLayoutManager? = null
+        private var paginationListener: PaginationScrollListener? = null
+
+        private lateinit var rowAdapter: RowCategoryAdapter
+        private lateinit var movieCategory: MovieCategory
 
         fun bind(movieCategory: MovieCategory) {
+            this.movieCategory = movieCategory
+            val moviesList = movieCategory.movies.mapNotNull { moviesRepository.getMovie(it) }.toMutableList()
 
-            val moviesList = movieCategory.movies.mapNotNull { moviesManager.getMovie(it) }
-
-            val adapter = RowCategoryAdapter(moviesList, onMovieClicked, movieCategory.bigImages)
+            rowAdapter = RowCategoryAdapter(moviesList, onMovieClicked, movieCategory.bigImages)
+            layoutManager = LinearLayoutManager(binding.root.context, RecyclerView.HORIZONTAL, false)
             binding.rowTitle.text = movieCategory.categoryType.title
-            binding.moviesRowList.adapter = adapter
-            binding.moviesRowList.layoutManager = LinearLayoutManager(binding.root.context, RecyclerView.HORIZONTAL, false)
+            binding.moviesRowList.adapter = rowAdapter
+            binding.moviesRowList.layoutManager = layoutManager
+            initPagination()
+
             binding.moreButton.setOnClickListener {
                 onCategoryClicked(movieCategory.categoryType)
             }
         }
+
+        private fun initPagination() {
+            paginationListener?.let {
+                binding.moviesRowList.removeOnScrollListener(it)
+            }
+
+            layoutManager?.let { lm ->
+                paginationListener = object : PaginationScrollListener(lm) {
+                    override fun onLoadMore() {
+                        lifecycleScope.launch {
+                            moviesRepository.loadMoreMovies(movieCategory.categoryType)
+                            val moviesList = movieCategory.movies.mapNotNull {
+                                moviesRepository.getMovie(it)
+                            }
+                            rowAdapter.setData(moviesList)
+                        }
+                    }
+                }.also { listener ->
+                    binding.moviesRowList.addOnScrollListener(listener)
+                }
+
+            }
+        }
+
     }
 
 }

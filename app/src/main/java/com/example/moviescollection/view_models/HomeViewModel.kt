@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val appRepository: AppRepository,
-    private val moviesManager: MoviesRepository
+    private val moviesRepository: MoviesRepository
 ) : ViewModel() {
 
     private val allMoviesMLD = MutableLiveData<ApiResult<List<MovieCategory>>>(ApiResult.Loading)
@@ -24,9 +24,9 @@ class HomeViewModel(
     fun getMoviesCatalog() {
         viewModelScope.launch {
             appRepository.getInitialConfig()
-            moviesManager.getInitialMoviesCatalog()
+            moviesRepository.getInitialMoviesCatalog()
 
-            allMoviesMLD.value = ApiResult.Success(moviesManager.allMoviesCatalog)
+            allMoviesMLD.value = ApiResult.Success(moviesRepository.allMoviesCatalog)
         }
     }
 }

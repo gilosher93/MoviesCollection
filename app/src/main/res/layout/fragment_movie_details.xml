@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
@@ -12,8 +12,8 @@
             android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/movie_backdrop_height"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            android:fitsSystemWindows="true">
+            android:fitsSystemWindows="true"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/collapsingToolbar"
@@ -35,12 +35,12 @@
                     tools:src="@tools:sample/backgrounds/scenic" />
 
                 <androidx.appcompat.widget.Toolbar
-                    app:layout_collapseMode="pin"
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
-                    app:navigationIcon="?attr/homeAsUpIndicator"
+                    app:layout_collapseMode="pin"
                     app:layout_scrollFlags="scroll|enterAlways|snap"
+                    app:navigationIcon="?attr/homeAsUpIndicator"
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>
@@ -48,10 +48,10 @@
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.core.widget.NestedScrollView
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:fillViewport="true"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -67,32 +67,43 @@
                     android:paddingEnd="8dp"
                     android:paddingBottom="20dp"
                     android:visibility="gone"
-                    tools:visibility="visible"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="1.0">
+                    tools:visibility="visible">
 
-                    <ImageView
-                        android:id="@+id/moviePoster"
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/moviePosterCardView"
                         android:layout_width="@dimen/movie_image_width"
                         android:layout_height="@dimen/movie_image_height"
+                        android:layout_margin="10dp"
                         android:layout_marginTop="16dp"
-                        android:scaleType="centerCrop"
+                        android:padding="5dp"
+                        app:cardBackgroundColor="@color/silver_chalice"
+                        app:cardCornerRadius="15dp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:src="@tools:sample/avatars" />
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            android:id="@+id/moviePoster"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                    </androidx.cardview.widget.CardView>
 
                     <TextView
                         android:id="@+id/budgetLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="144dp"
+                        android:layout_marginTop="16dp"
                         android:textColor="@color/white"
-                        app:layout_constraintStart_toEndOf="@+id/moviePoster"
-                        app:layout_constraintTop_toTopOf="@+id/moviePoster"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
                         tools:text="TextView" />
 
                     <TextView
@@ -135,104 +146,110 @@
                         app:layout_constraintTop_toBottomOf="@+id/ratingLabel"
                         tools:text="TextView" />
 
-                    <View
-                        android:id="@+id/separateView1"
-                        android:layout_width="match_parent"
-                        android:layout_height="0.5dp"
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:background="@color/burnt_sienna"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/moviePoster" />
-
-                    <TextView
-                        android:id="@+id/overviewTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="@string/overview"
-                        android:textColor="@color/white"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="@+id/separateView1"
-                        app:layout_constraintTop_toBottomOf="@+id/separateView1" />
-
-                    <TextView
-                        android:id="@+id/overviewLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:textColor="@color/white"
-                        app:layout_constraintStart_toStartOf="@+id/separateView1"
-                        app:layout_constraintTop_toBottomOf="@+id/overviewTitle"
-                        tools:text="Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview " />
-
-                    <View
-                        android:id="@+id/separateView2"
-                        android:layout_width="match_parent"
-                        android:layout_height="0.5dp"
-                        android:layout_marginTop="30dp"
-                        android:background="@color/burnt_sienna"
+                        android:orientation="vertical"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/overviewLabel" />
+                        app:layout_constraintTop_toBottomOf="@+id/moviePosterCardView">
 
-                    <TextView
-                        android:id="@+id/videosTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="@string/videos"
-                        android:layout_marginStart="10dp"
-                        android:textColor="@color/white"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="@+id/separateView2"
-                        app:layout_constraintTop_toBottomOf="@+id/separateView2" />
+                        <View
+                            android:id="@+id/separateView1"
+                            android:layout_width="match_parent"
+                            android:layout_height="0.5dp"
+                            android:background="@color/burnt_sienna"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/videosList"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        tools:layout_height="150dp"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/videosTitle"
-                        tools:listitem="@layout/item_movie" />
+                        <TextView
+                            android:id="@+id/overviewTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="16dp"
+                            android:text="@string/overview"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
 
-                    <View
-                        android:id="@+id/separateView3"
-                        android:layout_width="match_parent"
-                        android:layout_height="0.5dp"
-                        android:layout_marginTop="30dp"
-                        android:background="@color/burnt_sienna"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/videosList" />
+                        <TextView
+                            android:id="@+id/overviewLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="8dp"
+                            android:textColor="@color/white"
+                            tools:text="Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview Overview " />
 
-                    <TextView
-                        android:layout_marginStart="10dp"
-                        android:id="@+id/castTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="@string/casts"
-                        android:textColor="@color/white"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="@+id/separateView3"
-                        app:layout_constraintTop_toBottomOf="@+id/separateView3" />
+                        <View
+                            android:id="@+id/separateView2"
+                            android:layout_width="match_parent"
+                            android:layout_height="0.5dp"
+                            android:layout_marginTop="30dp"
+                            android:background="@color/burnt_sienna"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/castsList"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        tools:layout_height="200dp"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/castTitle"
-                        tools:listitem="@layout/item_movie" />
+                        <TextView
+                            android:id="@+id/videosTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="16dp"
+                            android:text="@string/videos"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/videosList"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            tools:layout_height="150dp"
+                            tools:listitem="@layout/item_movie"
+                            tools:visibility="visible" />
+
+                        <View
+                            android:id="@+id/separateView3"
+                            android:layout_width="match_parent"
+                            android:layout_height="0.5dp"
+                            android:layout_marginTop="30dp"
+                            android:background="@color/burnt_sienna"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
+
+                        <TextView
+                            android:id="@+id/castTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="16dp"
+                            android:text="@string/casts"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/castList"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            tools:layout_height="200dp"
+                            tools:listitem="@layout/item_movie"
+                            tools:visibility="visible" />
+
+                    </LinearLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -240,8 +257,8 @@
                     android:id="@+id/movieDetailsProgressBar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="visible"
                     android:layout_marginTop="100dp"
+                    android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

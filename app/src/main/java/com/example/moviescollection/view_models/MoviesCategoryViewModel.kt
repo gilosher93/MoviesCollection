@@ -29,9 +29,10 @@ class MoviesCategoryViewModel(
         }
     }
 
-    fun loadMore() {
+    fun loadMoreMovies(categoryType: CategoryType) {
         viewModelScope.launch {
-
+            moviesRepository.loadMoreMovies(categoryType)
+            getMoviesCategory(categoryType)
         }
     }
 

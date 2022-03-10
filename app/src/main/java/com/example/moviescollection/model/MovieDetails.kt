@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 data class MovieDetails(
     @SerializedName("backdrop_path") val backdropPath: String?,
     @SerializedName("id") val id: Int,
-    @SerializedName("overview") val overview: String,
+    @SerializedName("overview") val overview: String?,
     @SerializedName("poster_path") val posterPath: String?,
     @SerializedName("release_date") val releaseDate: String,
     @SerializedName("title") val title: String?,
@@ -23,5 +23,5 @@ data class MovieDetails(
 
 //    fun hasFullData() = budget > 0 && runtime > 0 && status != null
 
-    fun hasFullData() = castList != null && videoPreviewList != null
+    fun hasFullData() = status != null
 }

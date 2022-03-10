@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.example.moviescollection.R
 import com.example.moviescollection.databinding.FragmentMovieDetailsBinding
 import com.example.moviescollection.model.MovieDetails
 import com.example.moviescollection.network.results.ApiResult
@@ -48,8 +49,8 @@ class MovieDetailsFragment : Fragment() {
         observeMovie()
 
         castAdapter = CastAdapter()
-        binding.castsList.adapter = castAdapter
-        binding.castsList.layoutManager =
+        binding.castList.adapter = castAdapter
+        binding.castList.layoutManager =
             LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
 
         videoAdapter = VideoAdapter()
@@ -99,10 +100,25 @@ class MovieDetailsFragment : Fragment() {
             binding.releaseDateLabel.text = "Release: ${movie.releaseDate}"
             binding.runtimeLabel.text = "Runtime: ${movie.runtime} min"
             binding.ratingLabel.text = "Rating: ${movie.voteAverage}/10"
-            binding.overviewLabel.text = movie.overview.trim()
             movie.status?.let { binding.statusLabel.text = "Status: $it" }
-            movie.castList?.let { if (it.isNotEmpty()) castAdapter.setData(it) }
-            movie.videoPreviewList?.let { if (it.isNotEmpty()) videoAdapter.setData(it) }
+            movie.overview?.trim()?.let {
+                if (it.isNotEmpty()) {
+                    binding.overviewLabel.text = it
+                    showOverviewLayout()
+                }
+            }
+            movie.castList?.let {
+                if (it.isNotEmpty()) {
+                    castAdapter.setData(it)
+                    showCastLayout()
+                }
+            }
+            movie.videoPreviewList?.let {
+                if (it.isNotEmpty()) {
+                    videoAdapter.setData(it)
+                    showVideoLayout()
+                }
+            }
             setLoading(false)
         }
     }
@@ -124,8 +140,27 @@ class MovieDetailsFragment : Fragment() {
                 Glide.with(it)
                     .applyDefaultRequestOptions(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL))
                     .load(posterImageUrl)
+                    .placeholder(R.drawable.ic_movie)
                     .into(binding.moviePoster)
             }
         }
+    }
+
+    private fun showOverviewLayout() {
+        binding.separateView1.visibility = VISIBLE
+        binding.overviewTitle.visibility = VISIBLE
+        binding.overviewLabel.visibility = VISIBLE
+    }
+
+    private fun showVideoLayout() {
+        binding.separateView2.visibility = VISIBLE
+        binding.videosTitle.visibility = VISIBLE
+        binding.videosList.visibility = VISIBLE
+    }
+
+    private fun showCastLayout() {
+        binding.separateView3.visibility = VISIBLE
+        binding.castTitle.visibility = VISIBLE
+        binding.castList.visibility = VISIBLE
     }
 }

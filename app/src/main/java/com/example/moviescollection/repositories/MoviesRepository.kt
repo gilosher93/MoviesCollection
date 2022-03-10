@@ -1,5 +1,6 @@
 package com.example.moviescollection.repositories
 
+import android.util.Log
 import com.example.moviescollection.model.CategoryType
 import com.example.moviescollection.model.MovieCategory
 import com.example.moviescollection.model.MovieDetails
@@ -33,9 +34,10 @@ class MoviesRepository(
         return null
     }
 
-    suspend fun loadMoreMovies(categoryType: CategoryType) {
+    suspend fun loadMoreMovies(categoryType: CategoryType): List<MovieDetails>? {
         getCategoryByIndex(categoryType.ordinal)?.let { category ->
-            val nextPageIndex = category.currentIndex + 1
+            val nextPageIndex = category.currentIndexPage + 1
+            Log.d("TEST", "category: ${categoryType.name}, load page: $nextPageIndex")
             val moviesListResponse = when (categoryType) {
                 CategoryType.NOW_PLAYING -> {
                     moviesApi.getNowPlayingMovies(page = nextPageIndex)
@@ -51,15 +53,16 @@ class MoviesRepository(
                 }
             }
             moviesListResponse?.results?.let { moviesList ->
-                val moviesMutableList = category.movies.toMutableList()
-                moviesMutableList.addAll(moviesList.map { it.id })
-
                 moviesList.forEach {
                     updateMovie(it)
                 }
+
+                category.movies.addAll(moviesList.map { it.id })
+                category.currentIndexPage++
+                return moviesList
             }
         }
-
+        return null
     }
 
     fun getCategory(categoryType: CategoryType): MovieCategory? {
@@ -97,10 +100,10 @@ class MoviesRepository(
 
         // model the data by categories
         allMoviesCatalog = listOf(
-            MovieCategory(CategoryType.NOW_PLAYING, moviesList[CategoryType.NOW_PLAYING.ordinal]?.results?.map { it.id } ?: listOf(), true),
-            MovieCategory(CategoryType.POPULAR, moviesList[CategoryType.POPULAR.ordinal]?.results?.map { it.id } ?: listOf()),
-            MovieCategory(CategoryType.TOP_RATED, moviesList[CategoryType.TOP_RATED.ordinal]?.results?.map { it.id } ?: listOf()),
-            MovieCategory(CategoryType.UPCOMING, moviesList[CategoryType.UPCOMING.ordinal]?.results?.map { it.id } ?: listOf()),
+            MovieCategory(CategoryType.NOW_PLAYING, moviesList[CategoryType.NOW_PLAYING.ordinal]?.results?.map { it.id }?.toMutableList() ?: mutableListOf(), true),
+            MovieCategory(CategoryType.POPULAR, moviesList[CategoryType.POPULAR.ordinal]?.results?.map { it.id }?.toMutableList() ?: mutableListOf()),
+            MovieCategory(CategoryType.TOP_RATED, moviesList[CategoryType.TOP_RATED.ordinal]?.results?.map { it.id }?.toMutableList() ?: mutableListOf()),
+            MovieCategory(CategoryType.UPCOMING, moviesList[CategoryType.UPCOMING.ordinal]?.results?.map { it.id }?.toMutableList() ?: mutableListOf()),
         )
     }
 

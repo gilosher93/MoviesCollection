@@ -1,23 +1,24 @@
 package com.example.moviescollection.ui.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.moviescollection.R
 import com.example.moviescollection.databinding.FragmentCategoryBinding
-import com.example.moviescollection.repositories.MoviesRepository
 import com.example.moviescollection.model.CategoryType
 import com.example.moviescollection.model.MovieDetails
+import com.example.moviescollection.ui.PaginationScrollListener
 import com.example.moviescollection.ui.adapter.MoviesCategoryAdapter
 import com.example.moviescollection.view_models.MoviesCategoryViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.java.KoinJavaComponent
 
 const val NUM_OF_COLUMNS = 3
 
@@ -26,6 +27,8 @@ class CategoryFragment : Fragment() {
     private lateinit var moviesCategoryAdapter: MoviesCategoryAdapter
     private lateinit var binding: FragmentCategoryBinding
     private val moviesCategoryViewModel: MoviesCategoryViewModel by viewModel()
+    private var layoutManager: LinearLayoutManager? = null
+    private var paginationListener: PaginationScrollListener? = null
 
     private val args: CategoryFragmentArgs by navArgs()
 
@@ -45,15 +48,35 @@ class CategoryFragment : Fragment() {
 
         moviesCategoryViewModel.getMoviesCategory(categoryType)
 
+        layoutManager = GridLayoutManager(requireContext(), NUM_OF_COLUMNS)
         moviesCategoryAdapter = MoviesCategoryAdapter(onMovieClicked = ::onMovieClicked)
         binding.moviesList.adapter = moviesCategoryAdapter
-        binding.moviesList.layoutManager = GridLayoutManager(requireContext(), NUM_OF_COLUMNS)
+        binding.moviesList.layoutManager = layoutManager
+
+        initPagination()
 
         binding.toolbar.text = categoryType.title
         binding.backButton.setOnClickListener {
             activity?.onBackPressed()
         }
         observeMoviesCategory()
+    }
+
+    private fun initPagination() {
+        paginationListener?.let {
+            binding.moviesList.removeOnScrollListener(it)
+        }
+
+        layoutManager?.let {
+            paginationListener = object : PaginationScrollListener(it) {
+                override fun onLoadMore() {
+                    moviesCategoryViewModel.loadMoreMovies(categoryType)
+                }
+            }.also { listener ->
+                binding.moviesList.addOnScrollListener(listener)
+            }
+
+        }
     }
 
     private fun observeMoviesCategory() {
