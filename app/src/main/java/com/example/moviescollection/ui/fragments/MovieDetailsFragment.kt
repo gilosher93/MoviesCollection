@@ -7,23 +7,19 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.example.moviescollection.R
 import com.example.moviescollection.databinding.FragmentMovieDetailsBinding
-import com.example.moviescollection.di.AppConfig
 import com.example.moviescollection.model.MovieDetails
+import com.example.moviescollection.network.results.ApiResult
 import com.example.moviescollection.ui.adapter.CastAdapter
 import com.example.moviescollection.ui.adapter.VideoAdapter
-import com.example.moviescollection.view_models.MovieDetailsResult
 import com.example.moviescollection.view_models.MovieDetailsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.java.KoinJavaComponent.inject
 
 class MovieDetailsFragment : Fragment() {
 
@@ -32,7 +28,6 @@ class MovieDetailsFragment : Fragment() {
     private lateinit var binding: FragmentMovieDetailsBinding
 
     private val movieDetailsViewModel: MovieDetailsViewModel by viewModel()
-    private val appConfig : AppConfig by inject(AppConfig::class.java)
 
     private val args: MovieDetailsFragmentArgs by navArgs()
 
@@ -49,7 +44,8 @@ class MovieDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        movieDetailsViewModel.getMovieById(movieId)
+
+        observeMovie()
 
         castAdapter = CastAdapter()
         binding.castsList.adapter = castAdapter
@@ -63,20 +59,19 @@ class MovieDetailsFragment : Fragment() {
 
         binding.toolbar.setNavigationOnClickListener { activity?.onBackPressed() }
 
-        observeMovie()
+        movieDetailsViewModel.getMovieById(movieId)
     }
 
     private fun observeMovie() {
         movieDetailsViewModel.observeMovie(viewLifecycleOwner) { movieDetailsResult ->
             when(movieDetailsResult) {
-                is MovieDetailsResult.Loading -> {
+                is ApiResult.Loading -> {
                     setLoading(true)
                 }
-                is MovieDetailsResult.Success -> {
-                    setLoading(false)
-                    setContent(movieDetailsResult.movieDetails)
+                is ApiResult.Success -> {
+                    setContent(movieDetailsResult.data)
                 }
-                is MovieDetailsResult.Error -> {
+                is ApiResult.Error -> {
                     setLoading(false)
                 }
             }
@@ -93,45 +88,42 @@ class MovieDetailsFragment : Fragment() {
     }
 
     private fun setContent(movie: MovieDetails) {
-        binding.movieContent.visibility = VISIBLE
 
         setBackdrop(movie)
-        setPoster(movie)
+        movie.title?.let { binding.collapsingToolbar.title = it }
 
-        binding.collapsingToolbar.title = movie.title
-        binding.budgetLabel.text = "Budget: ${movie.budget}"
-        binding.releaseDateLabel.text = "Release: ${movie.releaseDate}"
-        binding.runtimeLabel.text = "Runtime: ${movie.runtime} min"
-        binding.ratingLabel.text = "Rating: ${movie.voteAverage}/10"
-        binding.overviewLabel.text = movie.overview.trim()
-        movie.status?.let { binding.statusLabel.text = "Status: $it" }
-        movie.castList?.let { castAdapter.setData(it) }
-        movie.videoPreviewList?.let { videoAdapter.setData(it) }
+        if (movie.hasFullData()) {
+            binding.movieContent.visibility = VISIBLE
+            setPoster(movie)
+            binding.budgetLabel.text = "Budget: ${movie.budget}"
+            binding.releaseDateLabel.text = "Release: ${movie.releaseDate}"
+            binding.runtimeLabel.text = "Runtime: ${movie.runtime} min"
+            binding.ratingLabel.text = "Rating: ${movie.voteAverage}/10"
+            binding.overviewLabel.text = movie.overview.trim()
+            movie.status?.let { binding.statusLabel.text = "Status: $it" }
+            movie.castList?.let { if (it.isNotEmpty()) castAdapter.setData(it) }
+            movie.videoPreviewList?.let { if (it.isNotEmpty()) videoAdapter.setData(it) }
+            setLoading(false)
+        }
     }
 
     private fun setBackdrop(movie: MovieDetails) {
-        val imagePrefix = appConfig.baseUrl + appConfig.backdropSize
-        val backdropPath = movie.backdropPath
-        if (imagePrefix.isBlank().not() && backdropPath.isNullOrBlank().not()) {
-            val backdropUrl = imagePrefix + backdropPath
+        movieDetailsViewModel.getBackdropImageUrl(movie.backdropPath)?.let { backdropImageUrl ->
             context?.let {
                 Glide.with(it)
                     .applyDefaultRequestOptions(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL))
-                    .load(backdropUrl)
+                    .load(backdropImageUrl)
                     .into(binding.movieBackdrop)
             }
         }
     }
 
     private fun setPoster(movie: MovieDetails) {
-        val imagePrefix = appConfig.baseUrl + appConfig.posterSize
-        val posterPath = movie.posterPath
-        if (imagePrefix.isNotEmpty() && posterPath.isNullOrBlank().not()) {
-            val posterUrl = imagePrefix + posterPath
+        movieDetailsViewModel.getPosterImageUrl(movie.posterPath)?.let { posterImageUrl ->
             context?.let {
                 Glide.with(it)
                     .applyDefaultRequestOptions(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL))
-                    .load(posterUrl)
+                    .load(posterImageUrl)
                     .into(binding.moviePoster)
             }
         }

@@ -19,7 +19,6 @@ class CastDiffUtilCallback(
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         return oldList[oldItemPosition].name == newList[newItemPosition].name
-                && oldList[oldItemPosition].adult == newList[newItemPosition].adult
                 && oldList[oldItemPosition].profilePath == newList[newItemPosition].profilePath
     }
 }

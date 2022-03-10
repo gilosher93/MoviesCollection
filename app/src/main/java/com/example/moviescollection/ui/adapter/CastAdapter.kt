@@ -10,12 +10,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.example.moviescollection.R
 import com.example.moviescollection.databinding.ItemCastBinding
-import com.example.moviescollection.databinding.ItemMovieBinding
-import com.example.moviescollection.di.AppConfig
 import com.example.moviescollection.model.Cast
-import com.example.moviescollection.model.MovieDetails
+import com.example.moviescollection.repositories.AppRepository
 import com.example.moviescollection.ui.diff_utils.CastDiffUtilCallback
-import com.example.moviescollection.ui.diff_utils.MovieDiffUtilCallback
 import org.koin.java.KoinJavaComponent.inject
 
 class CastAdapter(
@@ -50,7 +47,7 @@ class CastAdapter(
         private val binding: ItemCastBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        private val appConfig: AppConfig by inject(AppConfig::class.java)
+        private val appRepository: AppRepository by inject(AppRepository::class.java)
 
         fun bind(cast: Cast) {
             setImage(cast.profilePath)
@@ -58,14 +55,12 @@ class CastAdapter(
         }
 
         private fun setImage(imagePath: String?) {
-            val imagePrefix = appConfig.baseUrl + appConfig.posterSize
-            if (imagePrefix.isBlank().not() && imagePath.isNullOrBlank().not()) {
-                val imageUrl = imagePrefix + imagePath
+            appRepository.getPosterImageUrl(imagePath)?.let { posterImageUrl ->
                 Glide.with(itemView.context)
                     .applyDefaultRequestOptions(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL))
-                    .load(imageUrl)
+                    .load(posterImageUrl)
                     .into(binding.castProfileImage)
-            } else {
+            } ?: run {
                 binding.castProfileImage.setImageResource(0)
             }
         }

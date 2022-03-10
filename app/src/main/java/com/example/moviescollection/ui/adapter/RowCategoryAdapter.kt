@@ -10,8 +10,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.example.moviescollection.R
 import com.example.moviescollection.databinding.ItemMovieBinding
-import com.example.moviescollection.di.AppConfig
 import com.example.moviescollection.model.MovieDetails
+import com.example.moviescollection.repositories.AppRepository
 import com.example.moviescollection.ui.diff_utils.MovieDiffUtilCallback
 import org.koin.java.KoinJavaComponent.inject
 
@@ -53,12 +53,14 @@ class RowCategoryAdapter(
         private val jumbo: Boolean
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        private val appConfig : AppConfig by inject(AppConfig::class.java)
+        private val appRepository: AppRepository by inject(AppRepository::class.java)
 
         fun bind(movie: MovieDetails) {
 
             setImage(movie.posterPath)
-            binding.movieTitle.text = movie.title.trim()
+            movie.title?.let {
+                binding.movieTitle.text = it.trim()
+            }
 
             binding.root.setOnClickListener {
                 onMovieClicked(movie)
@@ -66,14 +68,12 @@ class RowCategoryAdapter(
         }
 
         private fun setImage(imagePath: String?) {
-            val imagePrefix = appConfig.baseUrl + appConfig.posterSize
-            if (imagePrefix.isNotEmpty() && imagePath.isNullOrBlank().not()) {
-                val imageUrl = imagePrefix + imagePath
+            appRepository.getPosterImageUrl(imagePath)?.let { posterImageUrl ->
                 Glide.with(itemView.context)
                     .applyDefaultRequestOptions(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL))
-                    .load(imageUrl)
+                    .load(posterImageUrl)
                     .into(binding.movieImage)
-            } else {
+            } ?: run {
                 binding.movieImage.setImageResource(0)
             }
 

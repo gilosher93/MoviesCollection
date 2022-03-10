@@ -13,9 +13,9 @@ import com.example.moviescollection.R
 import com.example.moviescollection.databinding.FragmentHomeBinding
 import com.example.moviescollection.model.CategoryType
 import com.example.moviescollection.model.MovieDetails
+import com.example.moviescollection.network.results.ApiResult
 import com.example.moviescollection.ui.adapter.MoviesAdapter
 import com.example.moviescollection.view_models.HomeViewModel
-import com.example.moviescollection.view_models.MovieResult
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeFragment : Fragment() {
@@ -55,14 +55,14 @@ class HomeFragment : Fragment() {
     private fun observeAllMovies() {
         homeViewModel.observeAllMovies(viewLifecycleOwner) { moviesResult ->
             when (moviesResult) {
-                is MovieResult.Loading -> {
+                is ApiResult.Loading -> {
                     setLoading(true)
                 }
-                is MovieResult.Success -> {
+                is ApiResult.Success -> {
                     setLoading(false)
-                    moviesAdapter.setData(moviesResult.allMovies)
+                    moviesAdapter.setData(moviesResult.data)
                 }
-                is MovieResult.Error -> {
+                is ApiResult.Error -> {
                     setLoading(false)
                 }
             }

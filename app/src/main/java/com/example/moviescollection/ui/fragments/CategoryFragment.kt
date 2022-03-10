@@ -11,7 +11,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.moviescollection.R
 import com.example.moviescollection.databinding.FragmentCategoryBinding
-import com.example.moviescollection.di.MoviesManager
+import com.example.moviescollection.repositories.MoviesRepository
 import com.example.moviescollection.model.CategoryType
 import com.example.moviescollection.model.MovieDetails
 import com.example.moviescollection.ui.adapter.MoviesCategoryAdapter
@@ -26,7 +26,6 @@ class CategoryFragment : Fragment() {
     private lateinit var moviesCategoryAdapter: MoviesCategoryAdapter
     private lateinit var binding: FragmentCategoryBinding
     private val moviesCategoryViewModel: MoviesCategoryViewModel by viewModel()
-    private val moviesManager: MoviesManager by KoinJavaComponent.inject(MoviesManager::class.java)
 
     private val args: CategoryFragmentArgs by navArgs()
 
@@ -59,7 +58,9 @@ class CategoryFragment : Fragment() {
 
     private fun observeMoviesCategory() {
         moviesCategoryViewModel.observeMoviesCategory(viewLifecycleOwner) { moviesCategory ->
-            val moviesList = moviesCategory.movies.mapNotNull { moviesManager.getMovie(it) }
+            val moviesList = moviesCategory.movies.mapNotNull {
+                moviesCategoryViewModel.getMovie(it)
+            }
             moviesCategoryAdapter.setData(moviesList)
         }
     }

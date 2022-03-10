@@ -8,12 +8,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moviescollection.R
 import com.example.moviescollection.databinding.ItemMoviesListBinding
-import com.example.moviescollection.di.MoviesManager
+import com.example.moviescollection.repositories.MoviesRepository
 import com.example.moviescollection.model.CategoryType
 import com.example.moviescollection.model.MovieCategory
 import com.example.moviescollection.model.MovieDetails
 import com.example.moviescollection.ui.diff_utils.MovieCategoryDiffUtilCallback
-import com.example.moviescollection.ui.diff_utils.MovieDiffUtilCallback
 import org.koin.java.KoinJavaComponent.inject
 
 class MoviesAdapter(
@@ -61,7 +60,7 @@ class MoviesAdapter(
         private var onCategoryClicked: (type: CategoryType) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        private val moviesManager: MoviesManager by inject(MoviesManager::class.java)
+        private val moviesManager: MoviesRepository by inject(MoviesRepository::class.java)
 
         fun bind(movieCategory: MovieCategory) {
 

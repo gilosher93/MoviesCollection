@@ -19,6 +19,5 @@ class MovieDiffUtilCallback(
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         return oldList[oldItemPosition].title == newList[newItemPosition].title
                 && oldList[oldItemPosition].voteAverage == newList[newItemPosition].voteAverage
-                && oldList[oldItemPosition].voteCount == newList[newItemPosition].voteCount
     }
 }
